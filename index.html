@@ -278,7 +278,7 @@
         </div>
     </div>
 
-   <div class="section">
+    <div class="section">
         <h2>Attributes & Saving Throws</h2>
         
         <div style="display:flex; font-size:0.7em; color:#888; margin-bottom:5px; padding-left:5px;">
@@ -360,7 +360,8 @@
             </div>
         </div>
     </div>
-<div class="section">
+    
+    <div class="section">
         <h2>Skills</h2>
         <div class="skill-row" style="border:none; color:#aaa; font-size:0.8em; padding-bottom:0;">
             <div class="col-name">Skill Name</div>
@@ -373,12 +374,86 @@
         <div id="skills-container">
             </div>
     </div>
-<div class="section">
+
+    <div class="section">
         <h2>Weapons</h2>
         <div id="weapon-list">
             </div>
         <button onclick="addWeapon()" style="background:#444; width:100%; margin-top:10px;">+ Add New Weapon</button>
     </div>
+
+    <div class="section">
+        <h2>Spellbook</h2>
+        
+        <div class="grid-box" style="margin-bottom: 15px;">
+            <div>
+                <label>Spell Attack Bonus</label>
+                <input type="number" id="spellAtk" placeholder="+5">
+            </div>
+            <div>
+                <label>Spell Save DC</label>
+                <input type="number" id="spellDc" placeholder="13">
+            </div>
+        </div>
+
+        <div class="spell-block">
+            <div class="spell-header">
+                <span style="font-weight:bold; color:#a78bfa;">Cantrips (0)</span>
+                <span style="font-size:0.8em; color:#888;">Infinite Use</span>
+            </div>
+            <textarea id="spells-0" class="spell-list" placeholder="List Cantrips here..."></textarea>
+        </div>
+
+        <div class="spell-block">
+            <div class="spell-header">
+                <span style="font-weight:bold; color:#a78bfa;">Level 1</span>
+                
+                <div class="spell-slots">
+                    <label class="pact-toggle">
+                        <input type="checkbox" id="pact-1"> Pact?
+                    </label>
+                    <input type="number" id="slots-1-cur" class="slot-input" placeholder="Cur">
+                    <span>/</span>
+                    <input type="number" id="slots-1-max" class="slot-input" placeholder="Max">
+                </div>
+            </div>
+            <textarea id="spells-1" class="spell-list" placeholder="Shield, Magic Missile..."></textarea>
+        </div>
+
+        <div class="spell-block">
+            <div class="spell-header">
+                <span style="font-weight:bold; color:#a78bfa;">Level 2</span>
+                
+                <div class="spell-slots">
+                    <label class="pact-toggle">
+                        <input type="checkbox" id="pact-2"> Pact?
+                    </label>
+                    <input type="number" id="slots-2-cur" class="slot-input" placeholder="Cur">
+                    <span>/</span>
+                    <input type="number" id="slots-2-max" class="slot-input" placeholder="Max">
+                </div>
+            </div>
+            <textarea id="spells-2" class="spell-list" placeholder="Misty Step, Invisibility..."></textarea>
+        </div>
+
+        <div class="spell-block">
+            <div class="spell-header">
+                <span style="font-weight:bold; color:#a78bfa;">Level 3</span>
+                
+                <div class="spell-slots">
+                    <label class="pact-toggle">
+                        <input type="checkbox" id="pact-3"> Pact?
+                    </label>
+                    <input type="number" id="slots-3-cur" class="slot-input" placeholder="Cur">
+                    <span>/</span>
+                    <input type="number" id="slots-3-max" class="slot-input" placeholder="Max">
+                </div>
+            </div>
+            <textarea id="spells-3" class="spell-list" placeholder="Fireball, Counterspell..."></textarea>
+        </div>
+
+    </div>
+
 </div>
 
 <script>
@@ -484,78 +559,6 @@
         // Note: We don't re-render here for text inputs to keep focus, 
         // but we do re-render for checkboxes/selects in the HTML above.
     }
-
-    <div class="section">
-        <h2>Spellbook</h2>
-        
-        <div class="grid-box" style="margin-bottom: 15px;">
-            <div>
-                <label>Spell Attack Bonus</label>
-                <input type="number" id="spellAtk" placeholder="+5">
-            </div>
-            <div>
-                <label>Spell Save DC</label>
-                <input type="number" id="spellDc" placeholder="13">
-            </div>
-        </div>
-
-        <div class="spell-block">
-            <div class="spell-header">
-                <span style="font-weight:bold; color:#a78bfa;">Cantrips (0)</span>
-                <span style="font-size:0.8em; color:#888;">Infinite Use</span>
-            </div>
-            <textarea id="spells-0" class="spell-list" placeholder="List Cantrips here..."></textarea>
-        </div>
-
-        <div class="spell-block">
-            <div class="spell-header">
-                <span style="font-weight:bold; color:#a78bfa;">Level 1</span>
-                
-                <div class="spell-slots">
-                    <label class="pact-toggle">
-                        <input type="checkbox" id="pact-1"> Pact?
-                    </label>
-                    <input type="number" id="slots-1-cur" class="slot-input" placeholder="Cur">
-                    <span>/</span>
-                    <input type="number" id="slots-1-max" class="slot-input" placeholder="Max">
-                </div>
-            </div>
-            <textarea id="spells-1" class="spell-list" placeholder="Shield, Magic Missile..."></textarea>
-        </div>
-
-        <div class="spell-block">
-            <div class="spell-header">
-                <span style="font-weight:bold; color:#a78bfa;">Level 2</span>
-                
-                <div class="spell-slots">
-                    <label class="pact-toggle">
-                        <input type="checkbox" id="pact-2"> Pact?
-                    </label>
-                    <input type="number" id="slots-2-cur" class="slot-input" placeholder="Cur">
-                    <span>/</span>
-                    <input type="number" id="slots-2-max" class="slot-input" placeholder="Max">
-                </div>
-            </div>
-            <textarea id="spells-2" class="spell-list" placeholder="Misty Step, Invisibility..."></textarea>
-        </div>
-
-        <div class="spell-block">
-            <div class="spell-header">
-                <span style="font-weight:bold; color:#a78bfa;">Level 3</span>
-                
-                <div class="spell-slots">
-                    <label class="pact-toggle">
-                        <input type="checkbox" id="pact-3"> Pact?
-                    </label>
-                    <input type="number" id="slots-3-cur" class="slot-input" placeholder="Cur">
-                    <span>/</span>
-                    <input type="number" id="slots-3-max" class="slot-input" placeholder="Max">
-                </div>
-            </div>
-            <textarea id="spells-3" class="spell-list" placeholder="Fireball, Counterspell..."></textarea>
-        </div>
-
-    </div>
 
     // 2. Handle Rests (Updated for Spells)
     function takeRest(type) {
@@ -796,10 +799,12 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         
-        // Name the file based on Character Name
-        const charName = document.getElementById('charName').value || "Character";
+        // Name the file based on Character Name (Safe check)
+        const nameEl = document.getElementById('charName');
+        const charName = nameEl ? nameEl.value : "Character";
+        
         a.href = url;
-        a.download = `${charName}.json`; 
+        a.download = `${charName || 'Character'}.json`; 
         
         document.body.appendChild(a);
         a.click();
