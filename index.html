@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D 2024 Character Sheet</title>
+    <style>
+        /* --- STYLING (The Look) --- */
+        body { font-family: sans-serif; background-color: #1a1a1a; color: #eee; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        /* Grid Layout */
+        .grid-box { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        
+        /* Sections */
+        .section { background: #2a2a2a; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #444; }
+        h2 { border-bottom: 2px solid #555; padding-bottom: 5px; margin-top: 0; color: #ffa500; }
+        
+        /* Inputs */
+        input, select, textarea { background: #333; border: 1px solid #555; color: white; padding: 5px; border-radius: 4px; width: 100%; box-sizing: border-box; }
+        input[type="number"] { text-align: center; font-weight: bold; }
+        
+        /* Buttons */
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        button { cursor: pointer; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; color: white; }
+        .btn-short { background-color: #d97706; } /* Orange */
+        .btn-long { background-color: #2563eb; }  /* Blue */
+        .btn-save { background-color: #16a34a; width: 100%; margin-top: 20px;} /* Green */
+
+        /* Stat Rows */
+        .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .mod-box { font-size: 1.2em; font-weight: bold; color: #4ade80; width: 40px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>D&D 2024 Character Sheet</h1>
+    
+    <div class="btn-group">
+        <button class="btn-short" onclick="takeRest('short')">Short Rest</button>
+        <button class="btn-long" onclick="takeRest('long')">Long Rest</button>
+    </div>
+
+    <div class="section">
+        <div class="grid-box">
+            <div><label>Character Name</label><input type="text" id="charName"></div>
+            <div><label>Class & Level</label><input type="text" id="charClass"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Vitals</h2>
+        <div class="grid-box">
+            <div>
+                <label>Current HP / Max HP</label>
+                <div style="display:flex; gap:5px;">
+                    <input type="number" id="curHp"> <span>/</span> <input type="number" id="maxHp">
+                </div>
+            </div>
+            <div>
+                <label>Spell Slots (Level 1)</label>
+                <div style="display:flex; gap:5px;">
+                    <input type="number" id="slots1Cur" placeholder="Cur"> <span>/</span> <input type="number" id="slots1Max" placeholder="Max">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Attributes</h2>
+        <div class="stat-row">
+            <span>Strength</span>
+            <input type="number" id="strScore" value="10" style="width: 60px;" oninput="calcMods()">
+            <span class="mod-box" id="strMod">+0</span>
+        </div>
+        <div class="stat-row">
+            <span>Dexterity</span>
+            <input type="number" id="dexScore" value="10" style="width: 60px;" oninput="calcMods()">
+            <span class="mod-box" id="dexMod">+0</span>
+        </div>
+        <div class="stat-row">
+            <span>Wisdom</span>
+            <input type="number" id="wisScore" value="10" style="width: 60px;" oninput="calcMods()">
+            <span class="mod-box" id="wisMod">+0</span>
+        </div>
+        </div>
+
+    <button class="btn-save" onclick="saveData()">Save Character</button>
+</div>
+
+<script>
+    /* --- LOGIC (The Brains) --- */
+
+    // 1. Calculate Modifiers automatically
+    function calcMods() {
+        const stats = ['str', 'dex', 'wis']; // Add others here
+        stats.forEach(stat => {
+            const score = document.getElementById(stat + 'Score').value;
+            const mod = Math.floor((score - 10) / 2);
+            const sign = mod >= 0 ? "+" : "";
+            document.getElementById(stat + 'Mod').innerText = sign + mod;
+            
+            // Auto-update Initiative if Dex changes
+            if(stat === 'dex') {
+                // You could update an initiative box here
+            }
+        });
+    }
+
+    // 2. Handle Rests
+    function takeRest(type) {
+        if (type === 'short') {
+            // Short Rest Logic: Reset Warlock slots or Fighter Action Surge?
+            alert("Short rest taken! (Add specific resets in the script)");
+        } else if (type === 'long') {
+            // Long Rest Logic: Reset HP to Max
+            const maxHp = document.getElementById('maxHp').value;
+            document.getElementById('curHp').value = maxHp;
+            
+            // Reset Spell Slots
+            const maxSlots = document.getElementById('slots1Max').value;
+            document.getElementById('slots1Cur').value = maxSlots;
+            
+            alert("Long rest! HP and Spell Slots reset.");
+        }
+        saveData();
+    }
+
+    // 3. Save Data to Browser Memory (LocalStorage)
+    function saveData() {
+        const inputs = document.querySelectorAll('input');
+        const data = {};
+        inputs.forEach(input => {
+            data[input.id] = input.value;
+        });
+        localStorage.setItem('dndSheetData', JSON.stringify(data));
+    }
+
+    // 4. Load Data on Startup
+    function loadData() {
+        const saved = localStorage.getItem('dndSheetData');
+        if (saved) {
+            const data = JSON.parse(saved);
+            for (const [key, value] of Object.entries(data)) {
+                if(document.getElementById(key)) {
+                    document.getElementById(key).value = value;
+                }
+            }
+            calcMods(); // Recalculate mods after loading numbers
+        }
+    }
+
+    // Run load when page opens
+    loadData();
+</script>
+
+</body>
+</html>
