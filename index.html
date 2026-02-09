@@ -53,7 +53,7 @@
             width: 40px; 
             text-align: center; 
         }
-        /* --- SKILLS STYLING --- */
+        /* --- SKILLS STYLING (Fixed Alignment) --- */
         .skill-row { 
             display: flex; 
             align-items: center; 
@@ -61,17 +61,13 @@
             border-bottom: 1px solid #333; 
             font-size: 0.9em;
         }
-        .skill-name { width: 140px; }
-        .skill-total { 
-            width: 40px; 
-            font-weight: bold; 
-            color: #4ade80; 
-            text-align: right; 
-            margin-right: 15px; 
-        }
-        .chk-group { display: flex; align-items: center; gap: 5px; margin-right: 10px; }
-        .skill-misc { width: 50px !important; text-align: center; }
-        .tiny-label { font-size: 0.7em; color: #888; }
+        /* Columns with fixed widths */
+        .col-name { width: 150px; flex-shrink: 0; }
+        .col-total { width: 50px; text-align: center; font-weight: bold; color: #4ade80; margin-right: 10px;}
+        .col-check { width: 40px; display: flex; justify-content: center; margin-right: 5px; }
+        .col-misc  { width: 60px !important; text-align: center; }
+        
+        .tiny-label { font-size: 0.7em; color: #888; margin-left: 5px; }
     </style>
 </head>
 <body>
@@ -175,12 +171,14 @@
     </div>
 <div class="section">
         <h2>Skills</h2>
-        <div style="display:flex; justify-content:flex-end; padding-bottom:5px; font-size:0.8em; color:#aaa;">
-            <span style="margin-right:15px;">Total</span>
-            <span style="margin-right:10px;">Prof</span>
-            <span style="margin-right:10px;">Exp</span>
-            <span>Misc</span>
+        <div class="skill-row" style="border:none; color:#aaa; font-size:0.8em; padding-bottom:0;">
+            <div class="col-name">Skill Name</div>
+            <div class="col-total" style="color:#aaa;">Total</div>
+            <div class="col-check">Prof</div>
+            <div class="col-check">Exp</div>
+            <div class="col-misc">Misc</div>
         </div>
+        
         <div id="skills-container">
             </div>
     </div>
@@ -211,30 +209,33 @@
     ];
 
     // --- INITIALIZATION ---
-    // 1. Build the Skill Rows automatically on load
+    // 1. Build the Skill Rows automatically (Updated with new layout)
     function initSkills() {
         const container = document.getElementById('skills-container');
         let html = '';
         
         skillList.forEach(skill => {
-            const id = skill.name.replace(/\s+/g, '').toLowerCase(); // e.g. "Animal Handling" -> "animalhandling"
+            const id = skill.name.replace(/\s+/g, '').toLowerCase(); 
             
             html += `
             <div class="skill-row">
-                <div class="skill-name">
-                    ${skill.name} <span class="tiny-label">(${skill.attr.toUpperCase()})</span>
+                <div class="col-name">
+                    ${skill.name} <span class="tiny-label">(${skill.attr.substring(0,3).toUpperCase()})</span>
                 </div>
-                <div class="skill-total" id="${id}-total">+0</div>
                 
-                <div class="chk-group">
+                <div class="col-total" id="${id}-total">+0</div>
+                
+                <div class="col-check">
                     <input type="checkbox" id="${id}-prof" onchange="calcSkills()">
                 </div>
 
-                <div class="chk-group">
+                <div class="col-check">
                     <input type="checkbox" id="${id}-exp" onchange="calcSkills()">
                 </div>
 
-                <input type="number" class="skill-misc" id="${id}-misc" placeholder="0" oninput="calcSkills()">
+                <div class="col-misc">
+                    <input type="number" id="${id}-misc" placeholder="0" oninput="calcSkills()">
+                </div>
             </div>
             `;
         });
