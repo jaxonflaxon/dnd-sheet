@@ -168,14 +168,13 @@
         <button class="btn-short" onclick="takeRest('short')">Short Rest</button>
         <button class="btn-long" onclick="takeRest('long')">Long Rest</button>
         
-        <button class="btn-save" onclick="saveData()">Save Character</button>
-    </div>
-
-    <div class="section">
-        <div class="grid-box">
-            <div><label>Character Name</label><input type="text" id="charName"></div>
-            <div><label>Class & Level</label><input type="text" id="charClass"></div>
+        <div style="margin-left: auto; display: flex; gap: 10px;">
+            <button class="btn-save" style="background:#555;" onclick="exportCharacter()">⬇ Export</button>
+            <button class="btn-save" style="background:#555;" onclick="document.getElementById('file-input').click()">⬆ Load</button>
+            <button class="btn-save" onclick="saveData()">Save Local</button>
         </div>
+
+        <input type="file" id="file-input" style="display: none;" onchange="importCharacter(this)">
     </div>
 
     <div class="section">
@@ -597,6 +596,86 @@
 
     // Start everything
     loadData();
+
+    // --- SIMPLE EXPORT / IMPORT (No Password) ---
+
+    // 1. EXPORT (Download File)
+    function exportCharacter() {
+        // A. Gather all data
+        const data = {};
+        document.querySelectorAll('input, select').forEach(input => {
+            if (input.id) {
+                if(input.type === 'checkbox') data[input.id] = input.checked;
+                else data[input.id] = input.value;
+            }
+        });
+        
+        // Combine stats and weapons into one object
+        const fullData = {
+            stats: data,
+            weapons: weapons // Uses your global weapons list
+        };
+
+        // B. Create JSON String
+        const jsonString = JSON.stringify(fullData, null, 2); // Pretty print
+
+        // C. Create Download
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        
+        // Name the file based on Character Name
+        const charName = document.getElementById('charName').value || "Character";
+        a.href = url;
+        a.download = `${charName}.json`; 
+        
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // 2. IMPORT (Load File)
+    function importCharacter(inputElement) {
+        const file = inputElement.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const content = e.target.result;
+                const parsedData = JSON.parse(content);
+
+                // Load Stats
+                if(parsedData.stats) {
+                    for (const [key, value] of Object.entries(parsedData.stats)) {
+                        const el = document.getElementById(key);
+                        if(el) {
+                            if(el.type === 'checkbox') el.checked = value;
+                            else el.value = value;
+                        }
+                    }
+                }
+                
+                // Load Weapons
+                if(parsedData.weapons) {
+                    weapons = parsedData.weapons;
+                    renderWeapons();
+                }
+                
+                // Refresh UI
+                calcMods();
+                alert("Character Loaded Successfully!");
+                
+            } catch (err) {
+                alert("Error loading file: " + err.message);
+            }
+        };
+        reader.readAsText(file);
+        
+        // Reset input so you can load the same file again if needed
+        inputElement.value = '';
+    }
 
 </script>
 </body>
