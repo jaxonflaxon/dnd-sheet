@@ -7,7 +7,7 @@
     <style>
         /* --- STYLING (The Look) --- */
         body { font-family: sans-serif; background-color: #1a1a1a; color: #eee; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 800px; margin: 0 auto; padding-bottom: 50px; }
         
         /* Grid Layout */
         .grid-box { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -83,7 +83,8 @@
             width: 40px; 
             text-align: center; 
         }
-        /* --- SKILLS STYLING (Fixed Alignment) --- */
+
+        /* --- SKILLS STYLING --- */
         .skill-row { 
             display: flex; 
             align-items: center; 
@@ -158,30 +159,43 @@
             cursor: pointer;
         }
 
-        /* --- SPELLBOOK STYLING --- */
+        /* --- SPELLBOOK STYLING (Dynamic) --- */
         .spell-block {
             background: #222;
             border: 1px solid #444;
             padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            position: relative;
         }
+        
         .spell-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             border-bottom: 1px solid #333;
-            padding-bottom: 5px;
+            padding-bottom: 8px;
         }
+
+        .spell-level-select {
+            background: #333; 
+            color: #a78bfa; 
+            font-weight: bold; 
+            border: 1px solid #555; 
+            padding: 2px;
+            border-radius: 4px;
+        }
+
         .spell-slots {
             display: flex;
             align-items: center;
             gap: 5px;
         }
+        
+        .hidden { display: none !important; }
         .slot-input { width: 40px !important; text-align: center; }
         
-        /* The "Pact Magic" toggle */
         .pact-toggle {
             font-size: 0.7em;
             color: #d97706; /* Orange for Short Rest */
@@ -190,14 +204,13 @@
             gap: 3px;
             cursor: pointer;
         }
-        
-        /* The text area for spell names */
+
         .spell-list {
             width: 100%;
             background: #1a1a1a;
             border: 1px solid #333;
             color: #ccc;
-            min-height: 40px;
+            min-height: 50px;
             font-family: monospace;
             font-size: 0.9em;
             resize: vertical;
@@ -292,7 +305,6 @@
             <span class="stat-name">Strength</span>
             <input type="number" id="strScore" value="10" class="stat-score" oninput="calcMods()">
             <span class="stat-mod" id="strMod">+0</span>
-            
             <div class="save-group">
                 <input type="checkbox" id="str-save-prof" onchange="calcMods()">
                 <span class="save-label">Save</span>
@@ -304,7 +316,6 @@
             <span class="stat-name">Dexterity</span>
             <input type="number" id="dexScore" value="10" class="stat-score" oninput="calcMods()">
             <span class="stat-mod" id="dexMod">+0</span>
-            
             <div class="save-group">
                 <input type="checkbox" id="dex-save-prof" onchange="calcMods()">
                 <span class="save-label">Save</span>
@@ -316,7 +327,6 @@
             <span class="stat-name">Constitution</span>
             <input type="number" id="conScore" value="10" class="stat-score" oninput="calcMods()">
             <span class="stat-mod" id="conMod">+0</span>
-            
             <div class="save-group">
                 <input type="checkbox" id="con-save-prof" onchange="calcMods()">
                 <span class="save-label">Save</span>
@@ -328,7 +338,6 @@
             <span class="stat-name">Intelligence</span>
             <input type="number" id="intScore" value="10" class="stat-score" oninput="calcMods()">
             <span class="stat-mod" id="intMod">+0</span>
-            
             <div class="save-group">
                 <input type="checkbox" id="int-save-prof" onchange="calcMods()">
                 <span class="save-label">Save</span>
@@ -340,7 +349,6 @@
             <span class="stat-name">Wisdom</span>
             <input type="number" id="wisScore" value="10" class="stat-score" oninput="calcMods()">
             <span class="stat-mod" id="wisMod">+0</span>
-            
             <div class="save-group">
                 <input type="checkbox" id="wis-save-prof" onchange="calcMods()">
                 <span class="save-label">Save</span>
@@ -352,7 +360,6 @@
             <span class="stat-name">Charisma</span>
             <input type="number" id="chaScore" value="10" class="stat-score" oninput="calcMods()">
             <span class="stat-mod" id="chaMod">+0</span>
-            
             <div class="save-group">
                 <input type="checkbox" id="cha-save-prof" onchange="calcMods()">
                 <span class="save-label">Save</span>
@@ -370,21 +377,17 @@
             <div class="col-check">Exp</div>
             <div class="col-misc">Misc</div>
         </div>
-        
-        <div id="skills-container">
-            </div>
+        <div id="skills-container"></div>
     </div>
 
     <div class="section">
         <h2>Weapons</h2>
-        <div id="weapon-list">
-            </div>
+        <div id="weapon-list"></div>
         <button onclick="addWeapon()" style="background:#444; width:100%; margin-top:10px;">+ Add New Weapon</button>
     </div>
 
     <div class="section">
         <h2>Spellbook</h2>
-        
         <div class="grid-box" style="margin-bottom: 15px;">
             <div>
                 <label>Spell Attack Bonus</label>
@@ -396,213 +399,20 @@
             </div>
         </div>
 
-        <div class="spell-block">
-            <div class="spell-header">
-                <span style="font-weight:bold; color:#a78bfa;">Cantrips (0)</span>
-                <span style="font-size:0.8em; color:#888;">Infinite Use</span>
-            </div>
-            <textarea id="spells-0" class="spell-list" placeholder="List Cantrips here..."></textarea>
-        </div>
-
-        <div class="spell-block">
-            <div class="spell-header">
-                <span style="font-weight:bold; color:#a78bfa;">Level 1</span>
-                
-                <div class="spell-slots">
-                    <label class="pact-toggle">
-                        <input type="checkbox" id="pact-1"> Pact?
-                    </label>
-                    <input type="number" id="slots-1-cur" class="slot-input" placeholder="Cur">
-                    <span>/</span>
-                    <input type="number" id="slots-1-max" class="slot-input" placeholder="Max">
-                </div>
-            </div>
-            <textarea id="spells-1" class="spell-list" placeholder="Shield, Magic Missile..."></textarea>
-        </div>
-
-        <div class="spell-block">
-            <div class="spell-header">
-                <span style="font-weight:bold; color:#a78bfa;">Level 2</span>
-                
-                <div class="spell-slots">
-                    <label class="pact-toggle">
-                        <input type="checkbox" id="pact-2"> Pact?
-                    </label>
-                    <input type="number" id="slots-2-cur" class="slot-input" placeholder="Cur">
-                    <span>/</span>
-                    <input type="number" id="slots-2-max" class="slot-input" placeholder="Max">
-                </div>
-            </div>
-            <textarea id="spells-2" class="spell-list" placeholder="Misty Step, Invisibility..."></textarea>
-        </div>
-
-        <div class="spell-block">
-            <div class="spell-header">
-                <span style="font-weight:bold; color:#a78bfa;">Level 3</span>
-                
-                <div class="spell-slots">
-                    <label class="pact-toggle">
-                        <input type="checkbox" id="pact-3"> Pact?
-                    </label>
-                    <input type="number" id="slots-3-cur" class="slot-input" placeholder="Cur">
-                    <span>/</span>
-                    <input type="number" id="slots-3-max" class="slot-input" placeholder="Max">
-                </div>
-            </div>
-            <textarea id="spells-3" class="spell-list" placeholder="Fireball, Counterspell..."></textarea>
-        </div>
-
+        <div id="spell-container"></div>
+        <button onclick="addSpellBlock()" style="background:#444; width:100%; margin-top:10px;">+ Add Spell Level</button>
     </div>
 
 </div>
 
 <script>
-    
-    // Global list of weapons
+    // --- GLOBAL DATA LISTS ---
     let weapons = [];
-    
-    // --- WEAPON LOGIC ---
+    let spellData = []; 
 
-    function renderWeapons() {
-        const container = document.getElementById('weapon-list');
-        container.innerHTML = ""; // Clear current list
-
-        weapons.forEach((w, index) => {
-            // Calculate To Hit immediately for display
-            const attrScore = document.getElementById(w.attr + 'Score').value || 10;
-            const mod = Math.floor((attrScore - 10) / 2);
-            const profBonus = parseInt(document.getElementById('profBonus').value) || 2;
-            
-            let hitTotal = mod + parseInt(w.bonus);
-            if(w.prof) hitTotal += profBonus;
-            const hitSign = hitTotal >= 0 ? "+" : "";
-
-            // Create the HTML
-            const html = `
-            <div class="weapon-card">
-                <button class="btn-del" onclick="removeWeapon(${index})">X</button>
-                
-                <div class="weapon-top">
-                    <div><label class="tiny-label">Name</label><input type="text" value="${w.name}" oninput="updateWeapon(${index}, 'name', this.value)"></div>
-                    <div><label class="tiny-label">Range</label><input type="text" value="${w.range}" oninput="updateWeapon(${index}, 'range', this.value)"></div>
-                    <div><label class="tiny-label">Hand</label>
-                        <select onchange="updateWeapon(${index}, 'hand', this.value)">
-                            <option value="1H" ${w.hand === '1H' ? 'selected' : ''}>1H</option>
-                            <option value="2H" ${w.hand === '2H' ? 'selected' : ''}>2H</option>
-                        </select>
-                    </div>
-                    <div><label class="tiny-label">Type</label><input type="text" value="${w.type}" oninput="updateWeapon(${index}, 'type', this.value)"></div>
-                </div>
-
-                <div class="weapon-bot">
-                    <div style="display:flex; flex-direction:column; width: 60px;">
-                        <span class="tiny-label">Attr</span>
-                        <select onchange="updateWeapon(${index}, 'attr', this.value); renderWeapons();">
-                            <option value="str" ${w.attr === 'str' ? 'selected' : ''}>STR</option>
-                            <option value="dex" ${w.attr === 'dex' ? 'selected' : ''}>DEX</option>
-                            <option value="int" ${w.attr === 'int' ? 'selected' : ''}>INT</option>
-                            <option value="wis" ${w.attr === 'wis' ? 'selected' : ''}>WIS</option>
-                            <option value="cha" ${w.attr === 'cha' ? 'selected' : ''}>CHA</option>
-                        </select>
-                    </div>
-                    
-                    <div style="display:flex; flex-direction:column; align-items:center;">
-                        <span class="tiny-label">Prof?</span>
-                        <input type="checkbox" ${w.prof ? 'checked' : ''} onchange="updateWeapon(${index}, 'prof', this.checked); renderWeapons();">
-                    </div>
-
-                    <div style="display:flex; flex-direction:column; width: 50px;">
-                        <span class="tiny-label">Misc</span>
-                        <input type="number" value="${w.bonus}" oninput="updateWeapon(${index}, 'bonus', this.value); renderWeapons();">
-                    </div>
-
-                    <div style="margin-left:auto; text-align:right;">
-                        <div class="tiny-label">TO HIT</div>
-                        <div class="hit-badge">${hitSign}${hitTotal}</div>
-                    </div>
-
-                    <div style="width: 100px;">
-                         <span class="tiny-label">Damage</span>
-                         <input type="text" value="${w.dmg}" placeholder="1d8+3" oninput="updateWeapon(${index}, 'dmg', this.value)">
-                    </div>
-                </div>
-            </div>
-            `;
-            container.innerHTML += html;
-        });
-    }
-
-    function addWeapon() {
-        // Add a default blank weapon
-        weapons.push({
-            name: "New Weapon",
-            range: "5ft",
-            hand: "1H",
-            type: "Slashing",
-            attr: "str",
-            prof: true,
-            bonus: 0,
-            dmg: ""
-        });
-        renderWeapons();
-    }
-
-    function removeWeapon(index) {
-        if(confirm("Delete this weapon?")) {
-            weapons.splice(index, 1);
-            renderWeapons();
-        }
-    }
-
-    function updateWeapon(index, field, value) {
-        weapons[index][field] = value;
-        // Note: We don't re-render here for text inputs to keep focus, 
-        // but we do re-render for checkboxes/selects in the HTML above.
-    }
-
-    // 2. Handle Rests (Updated for Spells)
-    function takeRest(type) {
-        
-        // --- SHORT REST LOGIC ---
-        if (type === 'short') {
-            // 1. Reset Warlock (Pact) Slots
-            for (let i = 1; i <= 9; i++) {
-                const isPact = document.getElementById('pact-' + i);
-                if (isPact && isPact.checked) {
-                    const max = document.getElementById('slots-' + i + '-max').value;
-                    document.getElementById('slots-' + i + '-cur').value = max;
-                }
-            }
-            alert("Short Rest: Pact Slots reset.");
-        } 
-        
-        // --- LONG REST LOGIC ---
-        else if (type === 'long') {
-            // 1. Reset HP
-            const maxHp = document.getElementById('maxHp').value;
-            if(maxHp) document.getElementById('curHp').value = maxHp;
-            
-            // 2. Reset Hit Dice (Rules say you get half back, but let's just warn user)
-            // (Optional: You could write logic to add half max here)
-
-            // 3. Reset ALL Spell Slots
-            for (let i = 1; i <= 9; i++) {
-                const maxInput = document.getElementById('slots-' + i + '-max');
-                const curInput = document.getElementById('slots-' + i + '-cur');
-                
-                // Only reset if the level exists in HTML
-                if (maxInput && curInput) {
-                    curInput.value = maxInput.value;
-                }
-            }
-            
-            alert("Long Rest: HP and All Spell Slots reset.");
-        }
-        
-        saveData(); // Auto-save after resting
-    }
-    
-    // --- CONFIGURATION ---
+    // ==========================================
+    // 1. CONFIG & SKILL LIST
+    // ==========================================
     const skillList = [
         { name: "Acrobatics", attr: "dex" },
         { name: "Animal Handling", attr: "wis" },
@@ -624,185 +434,311 @@
         { name: "Survival", attr: "wis" }
     ];
 
-    // --- INITIALIZATION ---
-    // 1. Build the Skill Rows automatically (Updated with new layout)
     function initSkills() {
         const container = document.getElementById('skills-container');
         let html = '';
-        
         skillList.forEach(skill => {
             const id = skill.name.replace(/\s+/g, '').toLowerCase(); 
-            
             html += `
             <div class="skill-row">
                 <div class="col-name">
                     ${skill.name} <span class="tiny-label">(${skill.attr.substring(0,3).toUpperCase()})</span>
                 </div>
-                
                 <div class="col-total" id="${id}-total">+0</div>
-                
                 <div class="col-check">
                     <input type="checkbox" id="${id}-prof" onchange="calcSkills()">
                 </div>
-
                 <div class="col-check">
                     <input type="checkbox" id="${id}-exp" onchange="calcSkills()">
                 </div>
-
                 <div class="col-misc">
                     <input type="number" id="${id}-misc" placeholder="0" oninput="calcSkills()">
                 </div>
-            </div>
-            `;
+            </div>`;
         });
-        
         container.innerHTML = html;
     }
 
-    // --- CALCULATIONS ---
-
-    // 2. Calculate Attribute Modifiers AND Saving Throws
+    // ==========================================
+    // 2. MATH LOGIC (Mods, Skills)
+    // ==========================================
     function calcMods() {
         const stats = ['str', 'dex', 'con', 'int', 'wis', 'cha']; 
         const profBonus = parseInt(document.getElementById('profBonus').value) || 2;
         
         stats.forEach(stat => {
             const scoreInput = document.getElementById(stat + 'Score');
-            
             if (scoreInput) {
-                // 1. Calculate the Base Modifier
                 const score = parseInt(scoreInput.value) || 10;
                 const mod = Math.floor((score - 10) / 2);
                 const sign = mod >= 0 ? "+" : "";
                 
-                // Update the green Mod box
                 document.getElementById(stat + 'Mod').innerText = sign + mod;
 
-                // 2. Calculate the Saving Throw
                 const isProficient = document.getElementById(stat + '-save-prof').checked;
                 let saveTotal = mod;
-                if (isProficient) {
-                    saveTotal += profBonus;
-                }
+                if (isProficient) saveTotal += profBonus;
                 const saveSign = saveTotal >= 0 ? "+" : "";
 
-                // Update the blue Save box
                 document.getElementById(stat + '-save').innerText = saveSign + saveTotal;
             }
         });
 
-        // 3. Recalculate Skills (because Dex/Str/etc changed)
-        if(typeof calcSkills === "function") {
-            calcSkills(); 
-        }
+        if(typeof calcSkills === "function") calcSkills(); 
     }
 
-    // 3. Calculate Skill Totals
     function calcSkills() {
         const profBonus = parseInt(document.getElementById('profBonus').value) || 2;
-
         skillList.forEach(skill => {
             const id = skill.name.replace(/\s+/g, '').toLowerCase();
-            
-            // Get Attribute Modifier (e.g., Dex Mod for Acrobatics)
             const attrScore = document.getElementById(skill.attr + 'Score').value;
             const attrMod = Math.floor((attrScore - 10) / 2);
 
-            // Get Checkboxes
             const isProf = document.getElementById(id + '-prof').checked;
             const isExp = document.getElementById(id + '-exp').checked;
             const misc = parseInt(document.getElementById(id + '-misc').value) || 0;
 
-            // Math: Attr + (Prof) + (Exp) + Misc
             let total = attrMod + misc;
             if (isProf) total += profBonus;
-            if (isExp) total += profBonus; // Expertise adds PB again
+            if (isExp) total += profBonus; 
 
-            // Update UI
             document.getElementById(id + '-total').innerText = (total >= 0 ? "+" : "") + total;
         });
     }
 
-    // --- SAVE / LOAD SYSTEM (Updated for Weapons) ---
-    
+    // ==========================================
+    // 3. WEAPON LOGIC
+    // ==========================================
+    function renderWeapons() {
+        const container = document.getElementById('weapon-list');
+        container.innerHTML = ""; 
+
+        weapons.forEach((w, index) => {
+            const attrScore = document.getElementById(w.attr + 'Score').value || 10;
+            const mod = Math.floor((attrScore - 10) / 2);
+            const profBonus = parseInt(document.getElementById('profBonus').value) || 2;
+            
+            let hitTotal = mod + parseInt(w.bonus);
+            if(w.prof) hitTotal += profBonus;
+            const hitSign = hitTotal >= 0 ? "+" : "";
+
+            const html = `
+            <div class="weapon-card">
+                <button class="btn-del" onclick="removeWeapon(${index})">X</button>
+                <div class="weapon-top">
+                    <div><label class="tiny-label">Name</label><input type="text" value="${w.name}" oninput="updateWeapon(${index}, 'name', this.value)"></div>
+                    <div><label class="tiny-label">Range</label><input type="text" value="${w.range}" oninput="updateWeapon(${index}, 'range', this.value)"></div>
+                    <div><label class="tiny-label">Hand</label>
+                        <select onchange="updateWeapon(${index}, 'hand', this.value)">
+                            <option value="1H" ${w.hand === '1H' ? 'selected' : ''}>1H</option>
+                            <option value="2H" ${w.hand === '2H' ? 'selected' : ''}>2H</option>
+                        </select>
+                    </div>
+                    <div><label class="tiny-label">Type</label><input type="text" value="${w.type}" oninput="updateWeapon(${index}, 'type', this.value)"></div>
+                </div>
+                <div class="weapon-bot">
+                    <div style="display:flex; flex-direction:column; width: 60px;">
+                        <span class="tiny-label">Attr</span>
+                        <select onchange="updateWeapon(${index}, 'attr', this.value); renderWeapons();">
+                            <option value="str" ${w.attr === 'str' ? 'selected' : ''}>STR</option>
+                            <option value="dex" ${w.attr === 'dex' ? 'selected' : ''}>DEX</option>
+                            <option value="int" ${w.attr === 'int' ? 'selected' : ''}>INT</option>
+                            <option value="wis" ${w.attr === 'wis' ? 'selected' : ''}>WIS</option>
+                            <option value="cha" ${w.attr === 'cha' ? 'selected' : ''}>CHA</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <span class="tiny-label">Prof?</span>
+                        <input type="checkbox" ${w.prof ? 'checked' : ''} onchange="updateWeapon(${index}, 'prof', this.checked); renderWeapons();">
+                    </div>
+                    <div style="display:flex; flex-direction:column; width: 50px;">
+                        <span class="tiny-label">Misc</span>
+                        <input type="number" value="${w.bonus}" oninput="updateWeapon(${index}, 'bonus', this.value); renderWeapons();">
+                    </div>
+                    <div style="margin-left:auto; text-align:right;">
+                        <div class="tiny-label">TO HIT</div>
+                        <div class="hit-badge">${hitSign}${hitTotal}</div>
+                    </div>
+                    <div style="width: 100px;">
+                         <span class="tiny-label">Damage</span>
+                         <input type="text" value="${w.dmg}" placeholder="1d8+3" oninput="updateWeapon(${index}, 'dmg', this.value)">
+                    </div>
+                </div>
+            </div>`;
+            container.innerHTML += html;
+        });
+    }
+
+    function addWeapon() {
+        weapons.push({ name: "New Weapon", range: "5ft", hand: "1H", type: "Slashing", attr: "str", prof: true, bonus: 0, dmg: "" });
+        renderWeapons();
+    }
+    function removeWeapon(index) {
+        if(confirm("Delete this weapon?")) { weapons.splice(index, 1); renderWeapons(); }
+    }
+    function updateWeapon(index, field, value) { weapons[index][field] = value; }
+
+    // ==========================================
+    // 4. SPELLBOOK LOGIC (Dynamic)
+    // ==========================================
+    function renderSpells() {
+        const container = document.getElementById('spell-container');
+        container.innerHTML = "";
+
+        spellData.forEach((block, index) => {
+            const isCantrip = block.level === "0";
+            const slotStyle = isCantrip ? "hidden" : "spell-slots";
+
+            const html = `
+            <div class="spell-block">
+                <button class="btn-del" onclick="removeSpellBlock(${index})">X</button>
+                <div class="spell-header">
+                    <div>
+                        <select class="spell-level-select" onchange="updateSpellBlock(${index}, 'level', this.value); renderSpells();">
+                            <option value="0" ${block.level === "0" ? 'selected' : ''}>Cantrips</option>
+                            <option value="1" ${block.level === "1" ? 'selected' : ''}>Level 1</option>
+                            <option value="2" ${block.level === "2" ? 'selected' : ''}>Level 2</option>
+                            <option value="3" ${block.level === "3" ? 'selected' : ''}>Level 3</option>
+                            <option value="4" ${block.level === "4" ? 'selected' : ''}>Level 4</option>
+                            <option value="5" ${block.level === "5" ? 'selected' : ''}>Level 5</option>
+                            <option value="6" ${block.level === "6" ? 'selected' : ''}>Level 6</option>
+                            <option value="7" ${block.level === "7" ? 'selected' : ''}>Level 7</option>
+                            <option value="8" ${block.level === "8" ? 'selected' : ''}>Level 8</option>
+                            <option value="9" ${block.level === "9" ? 'selected' : ''}>Level 9</option>
+                        </select>
+                    </div>
+                    <div class="${slotStyle}">
+                        <label class="pact-toggle" title="Restores on Short Rest">
+                            <input type="checkbox" ${block.isPact ? 'checked' : ''} onchange="updateSpellBlock(${index}, 'isPact', this.checked)"> Pact
+                        </label>
+                        <input type="number" class="slot-input" placeholder="Cur" value="${block.cur}" oninput="updateSpellBlock(${index}, 'cur', this.value)">
+                        <span>/</span>
+                        <input type="number" class="slot-input" placeholder="Max" value="${block.max}" oninput="updateSpellBlock(${index}, 'max', this.value)">
+                    </div>
+                </div>
+                <textarea class="spell-list" placeholder="List spells here..." oninput="updateSpellBlock(${index}, 'text', this.value)">${block.text}</textarea>
+            </div>
+            `;
+            container.innerHTML += html;
+        });
+    }
+
+    function addSpellBlock() {
+        spellData.push({ level: "1", cur: 0, max: 0, isPact: false, text: "" });
+        renderSpells();
+    }
+    function removeSpellBlock(index) {
+        if(confirm("Delete this spell level?")) {
+            spellData.splice(index, 1);
+            renderSpells();
+        }
+    }
+    function updateSpellBlock(index, field, value) {
+        spellData[index][field] = value;
+    }
+
+    // ==========================================
+    // 5. REST LOGIC
+    // ==========================================
+    function takeRest(type) {
+        if (type === 'short') {
+            // Short Rest: Reset Warlock (Pact) Slots
+            spellData.forEach(block => {
+                if (block.isPact) { block.cur = block.max; }
+            });
+            renderSpells(); 
+            alert("Short Rest: Pact Slots reset.");
+        } 
+        else if (type === 'long') {
+            // Long Rest: Reset HP
+            const maxHp = document.getElementById('maxHp').value;
+            if(maxHp) document.getElementById('curHp').value = maxHp;
+
+            // Long Rest: Reset ALL Spell Slots
+            spellData.forEach(block => {
+                block.cur = block.max;
+            });
+            renderSpells(); 
+            alert("Long Rest: HP and All Spell Slots reset.");
+        }
+        saveData(); 
+    }
+
+    // ==========================================
+    // 6. SAVE / LOAD / EXPORT
+    // ==========================================
     function saveData() {
         const data = {};
-        // 1. Save standard inputs
-        document.querySelectorAll('input, select').forEach(input => {
-            if (input.id) { // Only save items with an ID
-                if(input.type === 'checkbox') data[input.id] = input.checked;
-                else data[input.id] = input.value;
-            }
-        });
-        
-        // 2. Save the Weapon List
-        localStorage.setItem('dndSheetWeapons', JSON.stringify(weapons));
-        
-        // 3. Save the rest
-        localStorage.setItem('dndSheetData', JSON.stringify(data));
-        alert('Character Saved!');
-    }
-
-    function loadData() {
-        initSkills(); // Build skills
-        
-        // 1. Load Standard Inputs
-        const saved = localStorage.getItem('dndSheetData');
-        if (saved) {
-            const data = JSON.parse(saved);
-            for (const [key, value] of Object.entries(data)) {
-                const el = document.getElementById(key);
-                if(el) {
-                    if(el.type === 'checkbox') el.checked = value;
-                    else el.value = value;
-                }
-            }
-        }
-
-        // 2. Load Weapons
-        const savedWeapons = localStorage.getItem('dndSheetWeapons');
-        if (savedWeapons) {
-            weapons = JSON.parse(savedWeapons);
-        }
-        renderWeapons(); // Draw them on screen
-
-        calcMods(); // Recalculate stats
-    }
-
-    // Start everything
-    loadData();
-
-    // --- SIMPLE EXPORT / IMPORT (No Password) ---
-
-    // 1. EXPORT (Download File)
-    function exportCharacter() {
-        // A. Gather all data
-        const data = {};
-        document.querySelectorAll('input, select').forEach(input => {
+        document.querySelectorAll('input, select, textarea').forEach(input => {
             if (input.id) {
                 if(input.type === 'checkbox') data[input.id] = input.checked;
                 else data[input.id] = input.value;
             }
         });
         
-        // Combine stats and weapons into one object
         const fullData = {
             stats: data,
-            weapons: weapons // Uses your global weapons list
+            weapons: weapons,
+            spells: spellData 
         };
 
-        // B. Create JSON String
-        const jsonString = JSON.stringify(fullData, null, 2); // Pretty print
+        localStorage.setItem('dndSheetData_v2', JSON.stringify(fullData));
+        alert('Character Saved!');
+    }
 
-        // C. Create Download
+    function loadData() {
+        initSkills();
+        
+        const saved = localStorage.getItem('dndSheetData_v2'); 
+        if (saved) {
+            const fullData = JSON.parse(saved);
+            
+            // 1. Load Stats
+            if(fullData.stats) {
+                for (const [key, value] of Object.entries(fullData.stats)) {
+                    const el = document.getElementById(key);
+                    if(el) {
+                        if(el.type === 'checkbox') el.checked = value;
+                        else el.value = value;
+                    }
+                }
+            }
+            // 2. Load Weapons
+            if(fullData.weapons) {
+                weapons = fullData.weapons;
+                renderWeapons();
+            }
+            // 3. Load Spells
+            if(fullData.spells) {
+                spellData = fullData.spells;
+                renderSpells();
+            }
+        }
+        calcMods();
+    }
+
+    function exportCharacter() {
+        const data = {};
+        document.querySelectorAll('input, select, textarea').forEach(input => {
+            if (input.id) {
+                if(input.type === 'checkbox') data[input.id] = input.checked;
+                else data[input.id] = input.value;
+            }
+        });
+
+        const fullData = {
+            stats: data,
+            weapons: weapons,
+            spells: spellData
+        };
+
+        const jsonString = JSON.stringify(fullData, null, 2);
         const blob = new Blob([jsonString], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         
-        // Name the file based on Character Name (Safe check)
         const nameEl = document.getElementById('charName');
         const charName = nameEl ? nameEl.value : "Character";
-        
         a.href = url;
         a.download = `${charName || 'Character'}.json`; 
         
@@ -812,7 +748,6 @@
         URL.revokeObjectURL(url);
     }
 
-    // 2. IMPORT (Load File)
     function importCharacter(inputElement) {
         const file = inputElement.files[0];
         if (!file) return;
@@ -820,12 +755,10 @@
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
-                const content = e.target.result;
-                const parsedData = JSON.parse(content);
+                const fullData = JSON.parse(e.target.result);
 
-                // Load Stats
-                if(parsedData.stats) {
-                    for (const [key, value] of Object.entries(parsedData.stats)) {
+                if(fullData.stats) {
+                    for (const [key, value] of Object.entries(fullData.stats)) {
                         const el = document.getElementById(key);
                         if(el) {
                             if(el.type === 'checkbox') el.checked = value;
@@ -833,26 +766,26 @@
                         }
                     }
                 }
-                
-                // Load Weapons
-                if(parsedData.weapons) {
-                    weapons = parsedData.weapons;
+                if(fullData.weapons) {
+                    weapons = fullData.weapons;
                     renderWeapons();
                 }
-                
-                // Refresh UI
+                if(fullData.spells) {
+                    spellData = fullData.spells;
+                    renderSpells();
+                }
                 calcMods();
                 alert("Character Loaded Successfully!");
-                
             } catch (err) {
                 alert("Error loading file: " + err.message);
             }
         };
         reader.readAsText(file);
-        
-        // Reset input so you can load the same file again if needed
         inputElement.value = '';
     }
+
+    // --- STARTUP ---
+    loadData();
 
 </script>
 </body>
