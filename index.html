@@ -53,38 +53,84 @@
         <h2>Vitals</h2>
         <div class="grid-box">
             <div>
-                <label>Current HP / Max HP</label>
+                <label>Armor Class (AC)</label>
+                <input type="number" id="ac" value="10">
+            </div>
+            <div>
+                <label>Initiative</label>
+                <input type="number" id="init" value="0">
+            </div>
+            
+            <div>
+                <label>Speed</label>
+                <input type="text" id="speed" value="30 ft">
+            </div>
+            <div>
+                <label>Proficiency Bonus</label>
+                <input type="number" id="profBonus" value="2">
+            </div>
+
+            <div>
+                <label>Current / Max HP</label>
                 <div style="display:flex; gap:5px;">
-                    <input type="number" id="curHp"> <span>/</span> <input type="number" id="maxHp">
+                    <input type="number" id="curHp" placeholder="Cur"> <span>/</span> 
+                    <input type="number" id="maxHp" placeholder="Max">
                 </div>
             </div>
             <div>
-                <label>Spell Slots (Level 1)</label>
-                <div style="display:flex; gap:5px;">
-                    <input type="number" id="slots1Cur" placeholder="Cur"> <span>/</span> <input type="number" id="slots1Max" placeholder="Max">
+                <label>Temporary HP</label>
+                <input type="number" id="tempHp" placeholder="0">
+            </div>
+            
+            <div>
+                <label>Hit Dice</label>
+                 <div style="display:flex; gap:5px;">
+                    <input type="number" id="hdCur" placeholder="Cur"> <span>/</span> 
+                    <input type="text" id="hdMax" placeholder="Max (e.g. 1d10)">
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="section">
+   <div class="section">
         <h2>Attributes</h2>
+        
         <div class="stat-row">
             <span>Strength</span>
             <input type="number" id="strScore" value="10" style="width: 60px;" oninput="calcMods()">
             <span class="mod-box" id="strMod">+0</span>
         </div>
+
         <div class="stat-row">
             <span>Dexterity</span>
             <input type="number" id="dexScore" value="10" style="width: 60px;" oninput="calcMods()">
             <span class="mod-box" id="dexMod">+0</span>
         </div>
+
+        <div class="stat-row">
+            <span>Constitution</span>
+            <input type="number" id="conScore" value="10" style="width: 60px;" oninput="calcMods()">
+            <span class="mod-box" id="conMod">+0</span>
+        </div>
+
+        <div class="stat-row">
+            <span>Intelligence</span>
+            <input type="number" id="intScore" value="10" style="width: 60px;" oninput="calcMods()">
+            <span class="mod-box" id="intMod">+0</span>
+        </div>
+
         <div class="stat-row">
             <span>Wisdom</span>
             <input type="number" id="wisScore" value="10" style="width: 60px;" oninput="calcMods()">
             <span class="mod-box" id="wisMod">+0</span>
         </div>
+
+        <div class="stat-row">
+            <span>Charisma</span>
+            <input type="number" id="chaScore" value="10" style="width: 60px;" oninput="calcMods()">
+            <span class="mod-box" id="chaMod">+0</span>
         </div>
+    </div>
 
     <button class="btn-save" onclick="saveData()">Save Character</button>
 </div>
@@ -92,22 +138,23 @@
 <script>
     /* --- LOGIC (The Brains) --- */
 
-    // 1. Calculate Modifiers automatically
+// 1. Calculate Modifiers automatically
     function calcMods() {
-        const stats = ['str', 'dex', 'wis']; // Add others here
+        // Now includes all 6 stats
+        const stats = ['str', 'dex', 'con', 'int', 'wis', 'cha']; 
+        
         stats.forEach(stat => {
-            const score = document.getElementById(stat + 'Score').value;
-            const mod = Math.floor((score - 10) / 2);
-            const sign = mod >= 0 ? "+" : "";
-            document.getElementById(stat + 'Mod').innerText = sign + mod;
-            
-            // Auto-update Initiative if Dex changes
-            if(stat === 'dex') {
-                // You could update an initiative box here
+            const scoreInput = document.getElementById(stat + 'Score');
+            if (scoreInput) {
+                const score = scoreInput.value;
+                const mod = Math.floor((score - 10) / 2);
+                const sign = mod >= 0 ? "+" : "";
+                
+                // Update the modifier box
+                document.getElementById(stat + 'Mod').innerText = sign + mod;
             }
         });
     }
-
     // 2. Handle Rests
     function takeRest(type) {
         if (type === 'short') {
