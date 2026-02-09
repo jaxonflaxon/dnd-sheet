@@ -27,12 +27,25 @@
         .btn-long { background-color: #2563eb; }  /* Blue */
         .btn-save { background-color: #16a34a; width: 100%; margin-top: 20px;} /* Green */
 
-        /* Stat Rows - Updated for alignment */
+        /* --- ATTRIBUTES STYLING --- */
         .stat-row { 
             display: flex; 
             align-items: center; 
             margin-bottom: 10px; 
+            padding: 5px;
+            background: #252525; /* Slight background to separate rows */
+            border-radius: 5px;
         }
+        
+        /* Column Widths */
+        .stat-name  { width: 110px; font-weight: bold; }
+        .stat-score { width: 60px; margin-right: 10px; }
+        .stat-mod   { width: 40px; font-weight: bold; color: #4ade80; text-align: center; margin-right: 20px;}
+        
+        /* Saving Throw Section */
+        .save-group { display: flex; align-items: center; gap: 5px; border-left: 1px solid #444; padding-left: 15px; }
+        .save-label { font-size: 0.8em; color: #aaa; margin-right: 5px; }
+        .save-total { width: 40px; text-align: center; font-weight: bold; color: #60a5fa; } /* Blue for saves */
         
         /* This forces the Name (e.g., Strength) to be exactly 140px wide */
         .stat-row span:first-child {
@@ -105,7 +118,7 @@
             </div>
             <div>
                 <label>Proficiency Bonus</label>
-                <input type="number" id="profBonus" value="2">
+                <input type="number" id="profBonus" value="2" oninput="calcMods()">
             </div>
 
             <div>
@@ -131,42 +144,85 @@
     </div>
 
    <div class="section">
-        <h2>Attributes</h2>
+        <h2>Attributes & Saving Throws</h2>
         
-        <div class="stat-row">
-            <span>Strength</span>
-            <input type="number" id="strScore" value="10" style="width: 60px;" oninput="calcMods()">
-            <span class="mod-box" id="strMod">+0</span>
+        <div style="display:flex; font-size:0.7em; color:#888; margin-bottom:5px; padding-left:5px;">
+            <span style="width:110px;">Name</span>
+            <span style="width:70px;">Score</span>
+            <span style="width:60px;">Mod</span>
+            <span style="padding-left:15px;">Saving Throw</span>
         </div>
 
         <div class="stat-row">
-            <span>Dexterity</span>
-            <input type="number" id="dexScore" value="10" style="width: 60px;" oninput="calcMods()">
-            <span class="mod-box" id="dexMod">+0</span>
+            <span class="stat-name">Strength</span>
+            <input type="number" id="strScore" value="10" class="stat-score" oninput="calcMods()">
+            <span class="stat-mod" id="strMod">+0</span>
+            
+            <div class="save-group">
+                <input type="checkbox" id="str-save-prof" onchange="calcMods()">
+                <span class="save-label">Save</span>
+                <span class="save-total" id="str-save">+0</span>
+            </div>
         </div>
 
         <div class="stat-row">
-            <span>Constitution</span>
-            <input type="number" id="conScore" value="10" style="width: 60px;" oninput="calcMods()">
-            <span class="mod-box" id="conMod">+0</span>
+            <span class="stat-name">Dexterity</span>
+            <input type="number" id="dexScore" value="10" class="stat-score" oninput="calcMods()">
+            <span class="stat-mod" id="dexMod">+0</span>
+            
+            <div class="save-group">
+                <input type="checkbox" id="dex-save-prof" onchange="calcMods()">
+                <span class="save-label">Save</span>
+                <span class="save-total" id="dex-save">+0</span>
+            </div>
         </div>
 
         <div class="stat-row">
-            <span>Intelligence</span>
-            <input type="number" id="intScore" value="10" style="width: 60px;" oninput="calcMods()">
-            <span class="mod-box" id="intMod">+0</span>
+            <span class="stat-name">Constitution</span>
+            <input type="number" id="conScore" value="10" class="stat-score" oninput="calcMods()">
+            <span class="stat-mod" id="conMod">+0</span>
+            
+            <div class="save-group">
+                <input type="checkbox" id="con-save-prof" onchange="calcMods()">
+                <span class="save-label">Save</span>
+                <span class="save-total" id="con-save">+0</span>
+            </div>
         </div>
 
         <div class="stat-row">
-            <span>Wisdom</span>
-            <input type="number" id="wisScore" value="10" style="width: 60px;" oninput="calcMods()">
-            <span class="mod-box" id="wisMod">+0</span>
+            <span class="stat-name">Intelligence</span>
+            <input type="number" id="intScore" value="10" class="stat-score" oninput="calcMods()">
+            <span class="stat-mod" id="intMod">+0</span>
+            
+            <div class="save-group">
+                <input type="checkbox" id="int-save-prof" onchange="calcMods()">
+                <span class="save-label">Save</span>
+                <span class="save-total" id="int-save">+0</span>
+            </div>
         </div>
 
         <div class="stat-row">
-            <span>Charisma</span>
-            <input type="number" id="chaScore" value="10" style="width: 60px;" oninput="calcMods()">
-            <span class="mod-box" id="chaMod">+0</span>
+            <span class="stat-name">Wisdom</span>
+            <input type="number" id="wisScore" value="10" class="stat-score" oninput="calcMods()">
+            <span class="stat-mod" id="wisMod">+0</span>
+            
+            <div class="save-group">
+                <input type="checkbox" id="wis-save-prof" onchange="calcMods()">
+                <span class="save-label">Save</span>
+                <span class="save-total" id="wis-save">+0</span>
+            </div>
+        </div>
+
+        <div class="stat-row">
+            <span class="stat-name">Charisma</span>
+            <input type="number" id="chaScore" value="10" class="stat-score" oninput="calcMods()">
+            <span class="stat-mod" id="chaMod">+0</span>
+            
+            <div class="save-group">
+                <input type="checkbox" id="cha-save-prof" onchange="calcMods()">
+                <span class="save-label">Save</span>
+                <span class="save-total" id="cha-save">+0</span>
+            </div>
         </div>
     </div>
 <div class="section">
@@ -245,18 +301,40 @@
 
     // --- CALCULATIONS ---
 
-    // 2. Calculate Attributes & Trigger Skill Updates
+    // 2. Calculate Attribute Modifiers AND Saving Throws
     function calcMods() {
         const stats = ['str', 'dex', 'con', 'int', 'wis', 'cha']; 
+        const profBonus = parseInt(document.getElementById('profBonus').value) || 2;
+        
         stats.forEach(stat => {
             const scoreInput = document.getElementById(stat + 'Score');
-            if(scoreInput) {
-                const mod = Math.floor((scoreInput.value - 10) / 2);
-                document.getElementById(stat + 'Mod').innerText = (mod >= 0 ? "+" : "") + mod;
+            
+            if (scoreInput) {
+                // 1. Calculate the Base Modifier
+                const score = parseInt(scoreInput.value) || 10;
+                const mod = Math.floor((score - 10) / 2);
+                const sign = mod >= 0 ? "+" : "";
+                
+                // Update the green Mod box
+                document.getElementById(stat + 'Mod').innerText = sign + mod;
+
+                // 2. Calculate the Saving Throw
+                const isProficient = document.getElementById(stat + '-save-prof').checked;
+                let saveTotal = mod;
+                if (isProficient) {
+                    saveTotal += profBonus;
+                }
+                const saveSign = saveTotal >= 0 ? "+" : "";
+
+                // Update the blue Save box
+                document.getElementById(stat + '-save').innerText = saveSign + saveTotal;
             }
         });
-        // After stats change, recalculate skills immediately
-        calcSkills();
+
+        // 3. Recalculate Skills (because Dex/Str/etc changed)
+        if(typeof calcSkills === "function") {
+            calcSkills(); 
+        }
     }
 
     // 3. Calculate Skill Totals
