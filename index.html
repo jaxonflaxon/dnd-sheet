@@ -81,6 +81,65 @@
         .col-misc  { width: 60px !important; text-align: center; }
         
         .tiny-label { font-size: 0.7em; color: #888; margin-left: 5px; }
+        
+        /* --- WEAPON STYLING --- */
+        .weapon-card { 
+            background: #222; 
+            border: 1px solid #444; 
+            padding: 10px; 
+            margin-bottom: 15px; 
+            border-radius: 8px; 
+            position: relative;
+        }
+        
+        /* The Top Row (Name, Range, Type) */
+        .weapon-top { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr 1fr 1fr; 
+            gap: 10px; 
+            margin-bottom: 10px; 
+        }
+
+        /* The Bottom Row (Calculations) */
+        .weapon-bot { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            background: #1a1a1a; 
+            padding: 8px; 
+            border-radius: 5px; 
+            border: 1px solid #333;
+        }
+
+        /* The "To Hit" Big Number */
+        .hit-badge { 
+            background: #dc2626; /* Red for attack */
+            color: white; 
+            padding: 5px 12px; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            font-size: 1.1em;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        /* Delete Button (Red X) */
+        .btn-del {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #1a1a1a;
+            font-size: 0.8em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -239,9 +298,118 @@
             </div>
     </div>
     <button class="btn-save" onclick="saveData()">Save Character</button>
+<div class="section">
+        <h2>Weapons</h2>
+        <div id="weapon-list">
+            </div>
+        <button onclick="addWeapon()" style="background:#444; width:100%; margin-top:10px;">+ Add New Weapon</button>
+    </div>
 </div>
 
 <script>
+    
+    // Global list of weapons
+    let weapons = [];
+    
+    // --- WEAPON LOGIC ---
+
+    function renderWeapons() {
+        const container = document.getElementById('weapon-list');
+        container.innerHTML = ""; // Clear current list
+
+        weapons.forEach((w, index) => {
+            // Calculate To Hit immediately for display
+            const attrScore = document.getElementById(w.attr + 'Score').value || 10;
+            const mod = Math.floor((attrScore - 10) / 2);
+            const profBonus = parseInt(document.getElementById('profBonus').value) || 2;
+            
+            let hitTotal = mod + parseInt(w.bonus);
+            if(w.prof) hitTotal += profBonus;
+            const hitSign = hitTotal >= 0 ? "+" : "";
+
+            // Create the HTML
+            const html = `
+            <div class="weapon-card">
+                <button class="btn-del" onclick="removeWeapon(${index})">X</button>
+                
+                <div class="weapon-top">
+                    <div><label class="tiny-label">Name</label><input type="text" value="${w.name}" oninput="updateWeapon(${index}, 'name', this.value)"></div>
+                    <div><label class="tiny-label">Range</label><input type="text" value="${w.range}" oninput="updateWeapon(${index}, 'range', this.value)"></div>
+                    <div><label class="tiny-label">Hand</label>
+                        <select onchange="updateWeapon(${index}, 'hand', this.value)">
+                            <option value="1H" ${w.hand === '1H' ? 'selected' : ''}>1H</option>
+                            <option value="2H" ${w.hand === '2H' ? 'selected' : ''}>2H</option>
+                        </select>
+                    </div>
+                    <div><label class="tiny-label">Type</label><input type="text" value="${w.type}" oninput="updateWeapon(${index}, 'type', this.value)"></div>
+                </div>
+
+                <div class="weapon-bot">
+                    <div style="display:flex; flex-direction:column; width: 60px;">
+                        <span class="tiny-label">Attr</span>
+                        <select onchange="updateWeapon(${index}, 'attr', this.value); renderWeapons();">
+                            <option value="str" ${w.attr === 'str' ? 'selected' : ''}>STR</option>
+                            <option value="dex" ${w.attr === 'dex' ? 'selected' : ''}>DEX</option>
+                            <option value="int" ${w.attr === 'int' ? 'selected' : ''}>INT</option>
+                            <option value="wis" ${w.attr === 'wis' ? 'selected' : ''}>WIS</option>
+                            <option value="cha" ${w.attr === 'cha' ? 'selected' : ''}>CHA</option>
+                        </select>
+                    </div>
+                    
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <span class="tiny-label">Prof?</span>
+                        <input type="checkbox" ${w.prof ? 'checked' : ''} onchange="updateWeapon(${index}, 'prof', this.checked); renderWeapons();">
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; width: 50px;">
+                        <span class="tiny-label">Misc</span>
+                        <input type="number" value="${w.bonus}" oninput="updateWeapon(${index}, 'bonus', this.value); renderWeapons();">
+                    </div>
+
+                    <div style="margin-left:auto; text-align:right;">
+                        <div class="tiny-label">TO HIT</div>
+                        <div class="hit-badge">${hitSign}${hitTotal}</div>
+                    </div>
+
+                    <div style="width: 100px;">
+                         <span class="tiny-label">Damage</span>
+                         <input type="text" value="${w.dmg}" placeholder="1d8+3" oninput="updateWeapon(${index}, 'dmg', this.value)">
+                    </div>
+                </div>
+            </div>
+            `;
+            container.innerHTML += html;
+        });
+    }
+
+    function addWeapon() {
+        // Add a default blank weapon
+        weapons.push({
+            name: "New Weapon",
+            range: "5ft",
+            hand: "1H",
+            type: "Slashing",
+            attr: "str",
+            prof: true,
+            bonus: 0,
+            dmg: ""
+        });
+        renderWeapons();
+    }
+
+    function removeWeapon(index) {
+        if(confirm("Delete this weapon?")) {
+            weapons.splice(index, 1);
+            renderWeapons();
+        }
+    }
+
+    function updateWeapon(index, field, value) {
+        weapons[index][field] = value;
+        // Note: We don't re-render here for text inputs to keep focus, 
+        // but we do re-render for checkboxes/selects in the HTML above.
+    }
+    
     // --- CONFIGURATION ---
     const skillList = [
         { name: "Acrobatics", attr: "dex" },
@@ -363,22 +531,30 @@
         });
     }
 
-    // --- SAVE / LOAD SYSTEM ---
+    // --- SAVE / LOAD SYSTEM (Updated for Weapons) ---
     
     function saveData() {
         const data = {};
-        // Save all Inputs
-        document.querySelectorAll('input').forEach(input => {
-            if(input.type === 'checkbox') data[input.id] = input.checked;
-            else data[input.id] = input.value;
+        // 1. Save standard inputs
+        document.querySelectorAll('input, select').forEach(input => {
+            if (input.id) { // Only save items with an ID
+                if(input.type === 'checkbox') data[input.id] = input.checked;
+                else data[input.id] = input.value;
+            }
         });
+        
+        // 2. Save the Weapon List
+        localStorage.setItem('dndSheetWeapons', JSON.stringify(weapons));
+        
+        // 3. Save the rest
         localStorage.setItem('dndSheetData', JSON.stringify(data));
         alert('Character Saved!');
     }
 
     function loadData() {
-        initSkills(); // Build skills first!
-
+        initSkills(); // Build skills
+        
+        // 1. Load Standard Inputs
         const saved = localStorage.getItem('dndSheetData');
         if (saved) {
             const data = JSON.parse(saved);
@@ -390,7 +566,15 @@
                 }
             }
         }
-        calcMods(); // Recalculate everything
+
+        // 2. Load Weapons
+        const savedWeapons = localStorage.getItem('dndSheetWeapons');
+        if (savedWeapons) {
+            weapons = JSON.parse(savedWeapons);
+        }
+        renderWeapons(); // Draw them on screen
+
+        calcMods(); // Recalculate stats
     }
 
     // Start everything
