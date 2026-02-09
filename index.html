@@ -27,9 +27,51 @@
         .btn-long { background-color: #2563eb; }  /* Blue */
         .btn-save { background-color: #16a34a; width: 100%; margin-top: 20px;} /* Green */
 
-        /* Stat Rows */
-        .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .mod-box { font-size: 1.2em; font-weight: bold; color: #4ade80; width: 40px; text-align: center; }
+        /* Stat Rows - Updated for alignment */
+        .stat-row { 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 10px; 
+        }
+        
+        /* This forces the Name (e.g., Strength) to be exactly 140px wide */
+        .stat-row span:first-child {
+            width: 140px; 
+            font-weight: bold;
+            display: inline-block; /* Essential for width to work on spans */
+        }
+
+        /* Adds spacing between the input box and the green modifier */
+        .stat-row input {
+            margin-right: 15px; 
+        }
+
+        .mod-box { 
+            font-size: 1.2em; 
+            font-weight: bold; 
+            color: #4ade80; 
+            width: 40px; 
+            text-align: center; 
+        }
+        /* --- SKILLS STYLING --- */
+        .skill-row { 
+            display: flex; 
+            align-items: center; 
+            padding: 5px 0; 
+            border-bottom: 1px solid #333; 
+            font-size: 0.9em;
+        }
+        .skill-name { width: 140px; }
+        .skill-total { 
+            width: 40px; 
+            font-weight: bold; 
+            color: #4ade80; 
+            text-align: right; 
+            margin-right: 15px; 
+        }
+        .chk-group { display: flex; align-items: center; gap: 5px; margin-right: 10px; }
+        .skill-misc { width: 50px !important; text-align: center; }
+        .tiny-label { font-size: 0.7em; color: #888; }
     </style>
 </head>
 <body>
@@ -131,76 +173,150 @@
             <span class="mod-box" id="chaMod">+0</span>
         </div>
     </div>
-
+<div class="section">
+        <h2>Skills</h2>
+        <div style="display:flex; justify-content:flex-end; padding-bottom:5px; font-size:0.8em; color:#aaa;">
+            <span style="margin-right:15px;">Total</span>
+            <span style="margin-right:10px;">Prof</span>
+            <span style="margin-right:10px;">Exp</span>
+            <span>Misc</span>
+        </div>
+        <div id="skills-container">
+            </div>
+    </div>
     <button class="btn-save" onclick="saveData()">Save Character</button>
 </div>
 
 <script>
-    /* --- LOGIC (The Brains) --- */
+    // --- CONFIGURATION ---
+    const skillList = [
+        { name: "Acrobatics", attr: "dex" },
+        { name: "Animal Handling", attr: "wis" },
+        { name: "Arcana", attr: "int" },
+        { name: "Athletics", attr: "str" },
+        { name: "Deception", attr: "cha" },
+        { name: "History", attr: "int" },
+        { name: "Insight", attr: "wis" },
+        { name: "Intimidation", attr: "cha" },
+        { name: "Investigation", attr: "int" },
+        { name: "Medicine", attr: "wis" },
+        { name: "Nature", attr: "int" },
+        { name: "Perception", attr: "wis" },
+        { name: "Performance", attr: "cha" },
+        { name: "Persuasion", attr: "cha" },
+        { name: "Religion", attr: "int" },
+        { name: "Sleight of Hand", attr: "dex" },
+        { name: "Stealth", attr: "dex" },
+        { name: "Survival", attr: "wis" }
+    ];
 
-// 1. Calculate Modifiers automatically
-    function calcMods() {
-        // Now includes all 6 stats
-        const stats = ['str', 'dex', 'con', 'int', 'wis', 'cha']; 
+    // --- INITIALIZATION ---
+    // 1. Build the Skill Rows automatically on load
+    function initSkills() {
+        const container = document.getElementById('skills-container');
+        let html = '';
         
+        skillList.forEach(skill => {
+            const id = skill.name.replace(/\s+/g, '').toLowerCase(); // e.g. "Animal Handling" -> "animalhandling"
+            
+            html += `
+            <div class="skill-row">
+                <div class="skill-name">
+                    ${skill.name} <span class="tiny-label">(${skill.attr.toUpperCase()})</span>
+                </div>
+                <div class="skill-total" id="${id}-total">+0</div>
+                
+                <div class="chk-group">
+                    <input type="checkbox" id="${id}-prof" onchange="calcSkills()">
+                </div>
+
+                <div class="chk-group">
+                    <input type="checkbox" id="${id}-exp" onchange="calcSkills()">
+                </div>
+
+                <input type="number" class="skill-misc" id="${id}-misc" placeholder="0" oninput="calcSkills()">
+            </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    // --- CALCULATIONS ---
+
+    // 2. Calculate Attributes & Trigger Skill Updates
+    function calcMods() {
+        const stats = ['str', 'dex', 'con', 'int', 'wis', 'cha']; 
         stats.forEach(stat => {
             const scoreInput = document.getElementById(stat + 'Score');
-            if (scoreInput) {
-                const score = scoreInput.value;
-                const mod = Math.floor((score - 10) / 2);
-                const sign = mod >= 0 ? "+" : "";
-                
-                // Update the modifier box
-                document.getElementById(stat + 'Mod').innerText = sign + mod;
+            if(scoreInput) {
+                const mod = Math.floor((scoreInput.value - 10) / 2);
+                document.getElementById(stat + 'Mod').innerText = (mod >= 0 ? "+" : "") + mod;
             }
         });
-    }
-    // 2. Handle Rests
-    function takeRest(type) {
-        if (type === 'short') {
-            // Short Rest Logic: Reset Warlock slots or Fighter Action Surge?
-            alert("Short rest taken! (Add specific resets in the script)");
-        } else if (type === 'long') {
-            // Long Rest Logic: Reset HP to Max
-            const maxHp = document.getElementById('maxHp').value;
-            document.getElementById('curHp').value = maxHp;
-            
-            // Reset Spell Slots
-            const maxSlots = document.getElementById('slots1Max').value;
-            document.getElementById('slots1Cur').value = maxSlots;
-            
-            alert("Long rest! HP and Spell Slots reset.");
-        }
-        saveData();
+        // After stats change, recalculate skills immediately
+        calcSkills();
     }
 
-    // 3. Save Data to Browser Memory (LocalStorage)
+    // 3. Calculate Skill Totals
+    function calcSkills() {
+        const profBonus = parseInt(document.getElementById('profBonus').value) || 2;
+
+        skillList.forEach(skill => {
+            const id = skill.name.replace(/\s+/g, '').toLowerCase();
+            
+            // Get Attribute Modifier (e.g., Dex Mod for Acrobatics)
+            const attrScore = document.getElementById(skill.attr + 'Score').value;
+            const attrMod = Math.floor((attrScore - 10) / 2);
+
+            // Get Checkboxes
+            const isProf = document.getElementById(id + '-prof').checked;
+            const isExp = document.getElementById(id + '-exp').checked;
+            const misc = parseInt(document.getElementById(id + '-misc').value) || 0;
+
+            // Math: Attr + (Prof) + (Exp) + Misc
+            let total = attrMod + misc;
+            if (isProf) total += profBonus;
+            if (isExp) total += profBonus; // Expertise adds PB again
+
+            // Update UI
+            document.getElementById(id + '-total').innerText = (total >= 0 ? "+" : "") + total;
+        });
+    }
+
+    // --- SAVE / LOAD SYSTEM ---
+    
     function saveData() {
-        const inputs = document.querySelectorAll('input');
         const data = {};
-        inputs.forEach(input => {
-            data[input.id] = input.value;
+        // Save all Inputs
+        document.querySelectorAll('input').forEach(input => {
+            if(input.type === 'checkbox') data[input.id] = input.checked;
+            else data[input.id] = input.value;
         });
         localStorage.setItem('dndSheetData', JSON.stringify(data));
+        alert('Character Saved!');
     }
 
-    // 4. Load Data on Startup
     function loadData() {
+        initSkills(); // Build skills first!
+
         const saved = localStorage.getItem('dndSheetData');
         if (saved) {
             const data = JSON.parse(saved);
             for (const [key, value] of Object.entries(data)) {
-                if(document.getElementById(key)) {
-                    document.getElementById(key).value = value;
+                const el = document.getElementById(key);
+                if(el) {
+                    if(el.type === 'checkbox') el.checked = value;
+                    else el.value = value;
                 }
             }
-            calcMods(); // Recalculate mods after loading numbers
         }
+        calcMods(); // Recalculate everything
     }
 
-    // Run load when page opens
+    // Start everything
     loadData();
-</script>
 
+</script>
 </body>
 </html>
