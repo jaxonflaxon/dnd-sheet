@@ -215,6 +215,35 @@
             font-size: 0.9em;
             resize: vertical;
         }
+
+        /* --- EXTRAS (Currency, Notes, Features) --- */
+        .currency-row {
+            display: flex; 
+            justify-content: space-around; 
+            gap: 10px; 
+            text-align: center;
+        }
+        .currency-row div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .currency-row input {
+            color: #fbbf24; /* Gold text color */
+            font-size: 1.1em;
+            border-color: #444;
+        }
+        
+        .long-text {
+            width: 100%;
+            min-height: 150px; /* Tall box for writing */
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #ccc;
+            font-family: monospace;
+            padding: 10px;
+            resize: vertical; /* Allows you to drag the corner to make it bigger */
+        }
     </style>
 </head>
 <body>
@@ -401,6 +430,42 @@
 
         <div id="spell-container"></div>
         <button onclick="addSpellBlock()" style="background:#444; width:100%; margin-top:10px;">+ Add Spell Level</button>
+    </div>
+
+    <div class="section">
+        <h2>Currency</h2>
+        <div class="currency-row">
+            <div>
+                <label style="color:#b45309; font-size:0.8em; font-weight:bold;">CP</label>
+                <input type="number" id="coinCp" placeholder="0">
+            </div>
+            <div>
+                <label style="color:#94a3b8; font-size:0.8em; font-weight:bold;">SP</label>
+                <input type="number" id="coinSp" placeholder="0">
+            </div>
+            <div>
+                <label style="color:#14b8a6; font-size:0.8em; font-weight:bold;">EP</label>
+                <input type="number" id="coinEp" placeholder="0">
+            </div>
+            <div>
+                <label style="color:#fbbf24; font-size:0.8em; font-weight:bold;">GP</label>
+                <input type="number" id="coinGp" placeholder="0">
+            </div>
+            <div>
+                <label style="color:#a78bfa; font-size:0.8em; font-weight:bold;">PP</label>
+                <input type="number" id="coinPp" placeholder="0">
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Features & Traits</h2>
+        <textarea id="featuresMsg" class="long-text" placeholder="Class features, racial traits, feats, resistances..."></textarea>
+    </div>
+
+    <div class="section">
+        <h2>Notes & Inventory</h2>
+        <textarea id="notesMsg" class="long-text" placeholder="Backstory, quest logs, inventory items..."></textarea>
     </div>
 
 </div>
